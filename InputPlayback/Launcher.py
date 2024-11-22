@@ -12,7 +12,7 @@ def start_keyboard_listener():
 
 # Define the function to start the mouse listener
 def start_mouse_listener():
-    with mouse.Listener(on_click=f.on_click) as listener:
+    with mouse.Listener(on_click=f.on_click, on_move=f.on_move) as listener:
         listener.join()
 
 # Create threads for the keyboard and mouse listeners
