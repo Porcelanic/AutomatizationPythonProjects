@@ -3,118 +3,125 @@ import threading
 import pyautogui
 import time
 import Playback as pb
-# Global variable to count the number of inputs
-count = 0
-# Global variable to stop the listeners
-endRecording = False
-record = False
-mouseEnd = False
-recordTime = time.time()
-recordKey = '|'
-reRecordKey = '°'
+
+RECORD_KEY = "|"
+RERECORD_KEY = "°"
+ESCAPE_KEY = keyboard.Key.esc
+
+
+class RecordingState:
+    def __init__(self):
+        self.count = 0
+        self.endRecording = False
+        self.record = False
+        self.mouseEnd = False
+        self.recordTime = time.time()
+        self.keyboard_array = []
+        self.mouse_array = []
+
 
 class MouseInput:
     def __init__(self, typeOfInput, coordinateX, coordinateY):
-        global count
-        global recordTime
-        self.order = count
-        count += 1
-        self.timing = time.time() - recordTime
-        recordTime = time.time()
+        global state
+        self.order = state.count
+        state.count += 1
+        self.timing = time.time() - state.recordTime
+        state.recordTime = time.time()
         self.typeOfInput = typeOfInput
         self.coordinateX = coordinateX
         self.coordinateY = coordinateY
 
+
 class KeyboardInput:
     def __init__(self, typeOfInput, key):
-        global count
-        global recordTime
-        self.order = count
-        count += 1
-        self.timing = time.time() - recordTime
-        recordTime = time.time()
+        global state
+        self.order = state.count
+        state.count += 1
+        self.timing = time.time() - state.recordTime
+        state.recordTime = time.time()
         self.typeOfInput = typeOfInput
         self.key = key
 
-# Create an array (list) and add the object
-keyboard_array = []
-mouse_array = []
 
-def startRecording():
-    global record
-    global recordTime
-    record = not record
-    recordTime = time.time()
-    print("Recording started")
+state = RecordingState()
+
+
+def changeRecordingState():
+    global state
+    state.record = not state.record
+    state.recordTime = time.time()
+    if state.record:
+        print("Recording started")
+    else:
+        print("Recording stopped")
+
 
 def startPlayback():
-    global endRecording
-    global keyboard_array
-    global mouse_array
-    if pb.playbackState:
-        pb.stopPlayback = True
+    global state
+    if pb.state.playbackState:
+        pb.state.stopPlayback = True
         print("Playback stopped")
     else:
-        playbackThread = threading.Thread(target=pb.playback, args=(keyboard_array, mouse_array), daemon=True)
+        playbackThread = threading.Thread(target=pb.playback, daemon=True)
         playbackThread.start()
 
+
 def startReRecord():
-    global count
-    global recordTime
-    global keyboard_array
-    global mouse_array
-    global record
-    global stop
-    global endRecording
-    count = 0
-    recordTime = time.time()
-    keyboard_array = []
-    mouse_array = []
-    record = False
-    stop = False
-    endRecording = False
+    global state
+    state.count = 0
+    state.recordTime = time.time()
+    pb.state.keyboard_array = []
+    pb.state.mouse_array = []
+    state.record = False
+    state.stop = False
+    state.endRecording = False
     print("Re-recording ready")
+
 
 # KEYBOARD FUNCTIONS
 def on_press(key):
-    global keyboard_array
-    if  hasattr(key, 'char') and key.char == recordKey:
-        if not endRecording:
-            startRecording()
+    print(f"{key} pressed")
+    if hasattr(key, "char") and key.char == RECORD_KEY:
+        if not state.endRecording:
+            changeRecordingState()
         else:
             startPlayback()
-    elif hasattr(key, 'char') and key.char == reRecordKey:
+    elif hasattr(key, "char") and key.char == RERECORD_KEY:
         startReRecord()
 
-    if record:
-        keyboard_array.append(KeyboardInput("Press", key))
+    if state.record:
+        pb.state.keyboard_array.append(KeyboardInput("Press", key))
+
 
 def escapeActions():
-    global endRecording
-    global record
-    endRecording = True
-    record = False
-    for element in keyboard_array:
-        print(f"Order: {element.order},Timing: {element.timing} , Type: {element.typeOfInput}, Key: {element.key}")
-    for element in mouse_array:
-        print(f"Order: {element.order},Timing: {element.timing} , Type: {element.typeOfInput}, X: {element.coordinateX}, Y: {element.coordinateY}")
+    global state
+    state.endRecording = True
+    state.record = False
+    for element in pb.state.keyboard_array:
+        print(
+            f"Order: {element.order},Timing: {element.timing} , Type: {element.typeOfInput}, Key: {element.key}"
+        )
+    for element in pb.state.mouse_array:
+        print(
+            f"Order: {element.order},Timing: {element.timing} , Type: {element.typeOfInput}, X: {element.coordinateX}, Y: {element.coordinateY}"
+        )
 
 
 # This function is called every time a key is released
 def on_release(key):
+    global state
     # You can stop the listener by returning False
-    if key == keyboard.Key.esc and not endRecording:
+    if key == ESCAPE_KEY and not state.endRecording:
         escapeActions()
-    elif key == keyboard.Key.esc and endRecording:
-        print("test")
-        global mouseEnd
-        mouseEnd = True
+    elif key == ESCAPE_KEY and state.endRecording:
+        state.mouseEnd = True
         pyautogui.click()
         return False
 
+
 def on_click(x, y, button, pressed):
-    if mouseEnd:
+    if state.mouseEnd:
         return False
     if pressed:
-        if record:
-            mouse_array.append(MouseInput("Click", x, y))
+        if state.record:
+            pb.state.mouse_array.append(MouseInput("Click", x, y))
