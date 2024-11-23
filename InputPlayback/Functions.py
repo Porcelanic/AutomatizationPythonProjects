@@ -21,14 +21,19 @@ class RecordingState:
         self.currentMouseYPossition = 0
 
 
+class Input:
+    def __init__(self, inType, order, timing):
+        self.inType = inType
+        self.order = order
+        self.timing = timing
+        state.count += 1
+        state.recordTime = time.time()
+
+
 class MouseInput:
     def __init__(self, typeOfInput, inputButton, coordinateX, coordinateY):
         global state
-        self.type = "Mouse"
-        self.order = state.count
-        state.count += 1
-        self.timing = time.time() - state.recordTime
-        state.recordTime = time.time()
+        self.input = Input("Mouse", state.count, time.time() - state.recordTime)
         self.typeOfInput = typeOfInput
         self.inputButton = inputButton
         self.coordinateX = coordinateX
@@ -38,11 +43,7 @@ class MouseInput:
 class KeyboardInput:
     def __init__(self, typeOfInput, key):
         global state
-        self.type = "Keyboard"
-        self.order = state.count
-        state.count += 1
-        self.timing = time.time() - state.recordTime
-        state.recordTime = time.time()
+        self.input = Input("Keyboard", state.count, time.time() - state.recordTime)
         self.typeOfInput = typeOfInput
         self.key = key
 
@@ -101,13 +102,13 @@ def escapeActions():
     state.endRecording = True
     state.record = False
     for element in pb.state.array:
-        if element.type == "Keyboard":
+        if element.input.inType == "Keyboard":
             print(
-                f"Order: {element.order},Timing: {element.timing} , Type: {element.typeOfInput}, Key: {element.key}"
+                f"Order: {element.input.order},Timing: {element.input.timing} , Type: {element.typeOfInput}, Key: {element.key}"
             )
         else:
             print(
-                f"Order: {element.order},Timing: {element.timing} , Type: {element.typeOfInput}, X: {element.coordinateX}, Y: {element.coordinateY}"
+                f"Order: {element.input.order},Timing: {element.input.timing} , Type: {element.typeOfInput}, X: {element.coordinateX}, Y: {element.coordinateY}"
             )
 
 

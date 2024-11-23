@@ -22,10 +22,10 @@ def waitAndDoKeyboard(action, timing, inputType):
 def keyboardPlayback(order):
     keyAction = state.array[order]
     if hasattr(keyAction.key, "char") and keyAction.key.char != "|":
-        waitAndDoKeyboard(keyAction.key.char, keyAction.timing, keyAction.typeOfInput)
+        waitAndDoKeyboard(keyAction.key.char, keyAction.input.timing, keyAction.typeOfInput)
     elif not hasattr(keyAction.key, "char") and keyAction.key.name != "esc":
         key = keyAction.key.name.replace("_", "")
-        waitAndDoKeyboard(key, keyAction.timing, keyAction.typeOfInput)
+        waitAndDoKeyboard(key, keyAction.input.timing, keyAction.typeOfInput)
 
 
 def mousePlayback(order):
@@ -42,11 +42,11 @@ def playback():
     print("Playback will start in 2 seconds")
     time.sleep(2)
     print("Playback started")
-    end = state.array[-1].order
+    end = state.array[-1].input.order
     order = 0
     while order <= end and not state.stopPlayback:
         action = state.array[order]
-        if action.type == "Keyboard":
+        if action.input.inType == "Keyboard":
             keyboardPlayback(order)
         else:
             mousePlayback(order)
