@@ -1,7 +1,6 @@
 from pynput import keyboard
 import threading
 import pyautogui
-import time
 import Playback as pb
 
 RECORD_KEY = "|"
@@ -15,25 +14,22 @@ class RecordingState:
         self.endRecording = False
         self.record = False
         self.mouseEnd = False
-        self.recordTime = time.time()
         self.array = []
         self.currentMouseXPossition = 0
         self.currentMouseYPossition = 0
 
 
 class Input:
-    def __init__(self, inType, order, timing):
+    def __init__(self, inType, order):
         self.inType = inType
         self.order = order
-        self.timing = timing
         state.count += 1
-        state.recordTime = time.time()
 
 
 class MouseInput:
     def __init__(self, typeOfInput, inputButton, coordinateX, coordinateY):
         global state
-        self.input = Input("Mouse", state.count, time.time() - state.recordTime)
+        self.input = Input("Mouse", state.count)
         self.typeOfInput = typeOfInput
         self.inputButton = inputButton
         self.coordinateX = coordinateX
@@ -43,9 +39,10 @@ class MouseInput:
 class KeyboardInput:
     def __init__(self, typeOfInput, key):
         global state
-        self.input = Input("Keyboard", state.count, time.time() - state.recordTime)
+        self.input = Input("Keyboard", state.count)
         self.typeOfInput = typeOfInput
         self.key = key
+        self.hasChar = hasattr(key, "char")
 
 
 state = RecordingState()
@@ -54,7 +51,6 @@ state = RecordingState()
 def changeRecordingState():
     global state
     state.record = not state.record
-    state.recordTime = time.time()
     if state.record:
         print("Recording started")
     else:
@@ -74,7 +70,6 @@ def startPlayback():
 def startReRecord():
     global state
     state.count = 0
-    state.recordTime = time.time()
     pb.state.array = []
     pb.state.array = []
     state.record = False
@@ -83,8 +78,17 @@ def startReRecord():
     print("Re-recording ready")
 
 
+def KeyIsSpecial(key):
+    if hasattr(key, "char") and key.char == RECORD_KEY:
+        return True
+    elif not hasattr(key, "char") and key.name == "esc":
+        return True
+    return False
+
 # KEYBOARD FUNCTIONS
 def on_press(key):
+    if state.record and not KeyIsSpecial(key):
+        pb.state.array.append(KeyboardInput("Press", key))
     if hasattr(key, "char") and key.char == RECORD_KEY:
         if not state.endRecording:
             changeRecordingState()
@@ -92,9 +96,6 @@ def on_press(key):
             startPlayback()
     elif hasattr(key, "char") and key.char == RERECORD_KEY:
         startReRecord()
-
-    if state.record:
-        pb.state.array.append(KeyboardInput("Press", key))
 
 
 def escapeActions():
@@ -104,11 +105,11 @@ def escapeActions():
     for element in pb.state.array:
         if element.input.inType == "Keyboard":
             print(
-                f"Order: {element.input.order},Timing: {element.input.timing} , Type: {element.typeOfInput}, Key: {element.key}"
+                f"Order: {element.input.order}, Type: {element.typeOfInput}, Key: {element.key}"
             )
         else:
             print(
-                f"Order: {element.input.order},Timing: {element.input.timing} , Type: {element.typeOfInput}, X: {element.coordinateX}, Y: {element.coordinateY}"
+                f"Order: {element.input.order}, Type: {element.typeOfInput}, X: {element.coordinateX}, Y: {element.coordinateY}"
             )
 
 

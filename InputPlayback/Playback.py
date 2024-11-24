@@ -1,6 +1,7 @@
 import pyautogui  # Perform actions like clicks
 import time
 
+pyautogui.PAUSE = 0.01
 
 class playbackState:
     def __init__(self):
@@ -12,24 +13,20 @@ class playbackState:
 state = playbackState()
 
 
-def waitAndDoKeyboard(action, timing, inputType):
-    time.sleep(timing * 0.4)
+def waitAndDoKeyboard(action, inputType):
     if inputType == "Press":
         pyautogui.keyDown(action)
     else:
         pyautogui.keyUp(action)
 
-def keyboardPlayback(order):
-    keyAction = state.array[order]
-    if hasattr(keyAction.key, "char") and keyAction.key.char != "|":
-        waitAndDoKeyboard(keyAction.key.char, keyAction.input.timing, keyAction.typeOfInput)
-    elif not hasattr(keyAction.key, "char") and keyAction.key.name != "esc":
-        key = keyAction.key.name.replace("_", "")
-        waitAndDoKeyboard(key, keyAction.input.timing, keyAction.typeOfInput)
+def keyboardPlayback(keyAction):
+    if keyAction.hasChar:
+        waitAndDoKeyboard(keyAction.key.char, keyAction.typeOfInput)
+    else:
+        waitAndDoKeyboard(keyAction.key.name.replace("_", ""), keyAction.typeOfInput)
 
 
-def mousePlayback(order):
-    mouseAction = state.array[order]
+def mousePlayback(mouseAction):
     pyautogui.moveTo(mouseAction.coordinateX, mouseAction.coordinateY)
     if mouseAction.typeOfInput == "Click":
         pyautogui.mouseDown()
@@ -42,15 +39,14 @@ def playback():
     print("Playback will start in 2 seconds")
     time.sleep(2)
     print("Playback started")
-    end = state.array[-1].input.order
-    order = 0
-    while order <= end and not state.stopPlayback:
-        action = state.array[order]
-        if action.input.inType == "Keyboard":
-            keyboardPlayback(order)
+    for i in range(len(state.array)):
+        if state.stopPlayback:
+            break
+        element = state.array[i]
+        if element.input.inType == "Keyboard":
+            keyboardPlayback(element)
         else:
-            mousePlayback(order)
-        order += 1
+            mousePlayback(element)
     state.stopPlayback = False
     state.playbackState = False
     print("Playback ended")

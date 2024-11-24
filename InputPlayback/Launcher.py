@@ -22,7 +22,7 @@ mouse_thread = threading.Thread(target=start_mouse_listener, daemon=True)
 # Start the keyboard listener thread
 keyboard_thread.start()
 
-# Start the mouse listener thread
+# Start the mouse listener thread°
 mouse_thread.start()
 
 # Wait for both threads to finish
