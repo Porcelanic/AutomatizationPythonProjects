@@ -3,6 +3,7 @@ import time
 
 pyautogui.PAUSE = 0.01
 
+
 class playbackState:
     def __init__(self):
         self.playbackState = False
@@ -19,6 +20,7 @@ def waitAndDoKeyboard(action, inputType):
     else:
         pyautogui.keyUp(action)
 
+
 def keyboardPlayback(keyAction):
     if keyAction.hasChar:
         waitAndDoKeyboard(keyAction.key.char, keyAction.typeOfInput)
@@ -32,6 +34,7 @@ def mousePlayback(mouseAction):
         pyautogui.mouseDown()
     elif mouseAction.typeOfInput == "Release":
         pyautogui.mouseUp()
+
 
 def playback():
     global state

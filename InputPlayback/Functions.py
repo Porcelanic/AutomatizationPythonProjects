@@ -85,6 +85,7 @@ def KeyIsSpecial(key):
         return True
     return False
 
+
 # KEYBOARD FUNCTIONS
 def on_press(key):
     if state.record and not KeyIsSpecial(key):
