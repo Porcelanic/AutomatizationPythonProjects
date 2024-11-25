@@ -1,20 +1,20 @@
 import threading
 from pynput import mouse
 from pynput import keyboard
-import Recording as r
+import Listeners as l
 
 test = 0
 
 
 # Define the function to start the keyboard listenerheloworld
 def start_keyboard_listener():
-    with keyboard.Listener(on_press=r.on_press, on_release=r.on_release) as listener:
+    with keyboard.Listener(on_press=l.on_press, on_release=l.on_release) as listener:
         listener.join()
 
 
 # Define the function to start the mouse listener
 def start_mouse_listener():
-    with mouse.Listener(on_click=r.on_click, on_move=r.on_move) as listener:
+    with mouse.Listener(on_click=l.on_click, on_move=l.on_move) as listener:
         listener.join()
 
 
