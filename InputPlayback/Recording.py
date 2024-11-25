@@ -1,7 +1,7 @@
 from pynput import keyboard
 import threading
-import pyautogui
 import Playback as pb
+import time
 
 RECORD_KEY = "|"
 RERECORD_KEY = "°"
@@ -13,23 +13,25 @@ class RecordingState:
         self.count = 0
         self.endRecording = False
         self.record = False
-        self.mouseEnd = False
         self.array = []
+        self.recordTime = time.time()
         self.currentMouseXPossition = 0
         self.currentMouseYPossition = 0
 
 
 class Input:
-    def __init__(self, inType, order):
+    def __init__(self, inType, state):
         self.inType = inType
-        self.order = order
+        self.timing = time.time() - state.recordTime
+        self.order = state.count
         state.count += 1
+        state.recordTime = time.time()
 
 
 class MouseInput:
     def __init__(self, typeOfInput, inputButton, coordinateX, coordinateY):
         global state
-        self.input = Input("Mouse", state.count)
+        self.input = Input("Mouse", state)
         self.typeOfInput = typeOfInput
         self.inputButton = inputButton
         self.coordinateX = coordinateX
@@ -39,7 +41,7 @@ class MouseInput:
 class KeyboardInput:
     def __init__(self, typeOfInput, key):
         global state
-        self.input = Input("Keyboard", state.count)
+        self.input = Input("Keyboard", state)
         self.typeOfInput = typeOfInput
         self.key = key
         self.hasChar = hasattr(key, "char")
@@ -52,6 +54,7 @@ def changeRecordingState():
     global state
     state.record = not state.record
     if state.record:
+        state.recordTime = time.time()
         print("Recording started")
     else:
         print("Recording stopped")
@@ -106,11 +109,11 @@ def escapeActions():
     for element in pb.state.array:
         if element.input.inType == "Keyboard":
             print(
-                f"Order: {element.input.order}, Type: {element.typeOfInput}, Key: {element.key}"
+                f"Order: {element.input.order}, Type: {element.typeOfInput}, Key: {element.key}, timing: {element.input.timing}"
             )
         else:
             print(
-                f"Order: {element.input.order}, Type: {element.typeOfInput}, X: {element.coordinateX}, Y: {element.coordinateY}"
+                f"Order: {element.input.order}, Type: {element.typeOfInput}, X: {element.coordinateX}, Y: {element.coordinateY}, timing: {element.input.timing}"
             )
 
 
@@ -121,16 +124,12 @@ def on_release(key):
     if key == ESCAPE_KEY and not state.endRecording:
         escapeActions()
     elif key == ESCAPE_KEY and state.endRecording:
-        state.mouseEnd = True
-        pyautogui.click()
         return False
     if state.record:
         pb.state.array.append(KeyboardInput("Release", key))
 
 
 def on_click(x, y, button, pressed):
-    if state.mouseEnd:
-        return False
     if state.record:
         if pressed:
             pb.state.array.append(MouseInput("Click", button, x, y))

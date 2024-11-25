@@ -1,7 +1,7 @@
 import pyautogui  # Perform actions like clicks
 import time
 
-pyautogui.PAUSE = 0.01
+useTiming = True
 
 
 class playbackState:
@@ -36,20 +36,30 @@ def mousePlayback(mouseAction):
         pyautogui.mouseUp()
 
 
-def playback():
-    global state
+def startPlayback(state):
     state.playbackState = True
-    print("Playback will start in 2 seconds")
-    time.sleep(2)
     print("Playback started")
     for i in range(len(state.array)):
         if state.stopPlayback:
             break
         element = state.array[i]
+        if useTiming:
+            time.sleep(element.input.timing)
         if element.input.inType == "Keyboard":
             keyboardPlayback(element)
         else:
             mousePlayback(element)
+
+
+def playback():
+    global state
+    if useTiming:
+        pyautogui.PAUSE = 0
+    else:
+        pyautogui.PAUSE = 0.01
+    print("Playback will start in 2 seconds")
+    time.sleep(2)
+    startPlayback(state)
     state.stopPlayback = False
     state.playbackState = False
     print("Playback ended")
