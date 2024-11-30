@@ -50,7 +50,7 @@ def on_click(x, y, button, pressed):
 
 
 def on_move(x, y):
-    # checks if the recording is active and is outside a cetain range and if it is it adds the mouse movement to the array
+    # checks if the recording is active and  the mouse is outside a cetain range and if it is, it adds the mouse movement to the array
     # the range restriction was added so that the mouse movement wouldn't monopolize the input array
     # since one normal motion of the mouse would create a crazy amount of inputs
     if rc.state.record and not rc.inRange(x, y):

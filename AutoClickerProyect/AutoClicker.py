@@ -4,6 +4,7 @@ import threading  # Use threads for background tasks
 import time
 
 KeepGoing = True  # Main loop condition
+pyautogui.PAUSE = 0
 
 # Using threading.Event() for better thread control
 auto_click_event = threading.Event()
@@ -11,8 +12,10 @@ auto_click_event = threading.Event()
 def AutoClicker():
     while KeepGoing:
         auto_click_event.wait()  # Wait until auto-clicking is allowed
-        pyautogui.click()
-        time.sleep(0.1)  # Interval between clicks
+        pyautogui.mouseDown()  # Perform click
+        time.sleep(0.01)  # Click duration
+        pyautogui.mouseUp()
+        time.sleep(0.01)  # Interval between clicks
 
 def changeState(state):
     if state:
@@ -20,7 +23,7 @@ def changeState(state):
     else:
         auto_click_event.clear()  # Stop auto-clicking
 
-# Start the background autoclicker thread
+# Start the background autoclicker threadx
 thread = threading.Thread(target=AutoClicker, daemon=True)
 thread.start()
 
