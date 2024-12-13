@@ -1,0 +1,5 @@
+This folder is used to test some key actions, since working in the inputPlayback i found out that some key inputs work differently 
+from others and thus i required a way of testing my keyboard layout to check what kind of handling is needed for each case
+
+For example pynput doesn't treat the numpad 'numbers' as numbers, instead it throws their 'key codes', which means i need an 
+adaptor for when the playback happens

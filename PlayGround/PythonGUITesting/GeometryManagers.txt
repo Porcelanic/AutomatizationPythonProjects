@@ -1,0 +1,14 @@
+'pack': stacks each new element on below the others
+'grid': you have to configure a 'grid' and each element has to be given coordinates for which row and column it will be located in
+'place': gives absolute freedom to where an element can be placed, but you have to specify the precise location, or use relative locations based on an 'anchor'
+
+ANCHORS:
+"n": North (top center)
+"ne": North-East (top-right corner)
+"e": East (right center)
+"se": South-East (bottom-right corner)
+"s": South (bottom center)
+"sw": South-West (bottom-left corner)
+"w": West (left center)
+"nw": North-West (top-left corner)
+"center": Center (default)
