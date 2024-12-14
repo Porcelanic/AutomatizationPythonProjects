@@ -1,5 +1,5 @@
 import tkinter as tk
-from AutoClickerProyect import AutoClicker as ac
+from AutoClickerProject import AutoClicker as ac
 from InputPlayback import Launcher as ip
 import threading
 

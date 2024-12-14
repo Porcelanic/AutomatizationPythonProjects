@@ -21,6 +21,7 @@ def killThreads():
     new_position = (current_position.x + 1, current_position.y)
     pyautogui.moveTo(new_position)
     pyautogui.press('space')
+    l.setKillSwitch(False)
     
 
 
@@ -49,6 +50,7 @@ def main():
     
     # Wait for the keyboard thread to finish
     keyboard_thread.join()
+    print("Keyboard thread finished")
 
 if __name__ == "__main__":
     l.main = True

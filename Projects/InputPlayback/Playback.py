@@ -61,8 +61,9 @@ def playback():
         pyautogui.PAUSE = 0
     else:
         pyautogui.PAUSE = 0.01
-    print("Playback will start in 2 seconds")
-    time.sleep(2)
+    print("Playback will start in 0.5 seconds")
+    state.playbackState = True
+    time.sleep(0.5)
     startPlayback(state)
     state.stopPlayback = False
     state.playbackState = False
