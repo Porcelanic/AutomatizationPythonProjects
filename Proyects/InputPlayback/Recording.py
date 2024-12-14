@@ -1,6 +1,6 @@
 from pynput import keyboard
 import threading
-import Playback as pb
+from . import Playback as pb
 import time
 
 RECORD_KEY = "|"
@@ -32,11 +32,13 @@ def changeRecordingState():
         print("Recording stopped")
 
 
+def stopPlayback():
+    pb.state.stopPlayback = True
+
 def startPlayback():
     global state
     if pb.state.playbackState:
-        pb.state.stopPlayback = True
-        print("Playback stopped")
+        stopPlayback()
     else:
         playbackThread = threading.Thread(target=pb.playback, daemon=True)
         playbackThread.start()
@@ -50,6 +52,7 @@ def startReRecord():
     state.record = False
     state.stop = False
     state.endRecording = False
+    stopPlayback()
     print("Re-recording ready")
 
 

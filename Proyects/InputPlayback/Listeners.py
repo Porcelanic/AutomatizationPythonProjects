@@ -1,10 +1,19 @@
-import Playback as pb
-import Recording as rc
-import InputClasses as ic
+from . import Playback as pb
+from . import Recording as rc
+from . import InputClasses as ic
 
+killSwitch = False
+main = False
+
+
+def setKillSwitch(state):
+    global killSwitch
+    killSwitch = state
 
 # KEYBOARD FUNCTIONS
 def on_press(key):
+    if killSwitch:
+        return False
     # checks if the key is either the record (or re-record) key or escape key and if it is it doesn't record it
     if rc.state.record and not rc.KeyIsSpecial(key):
         # adds the key press to the array
@@ -28,7 +37,7 @@ def on_release(key):
     # checks if the key is the escape key and if it is it calls the escape actions
     if key == rc.ESCAPE_KEY:
         # checks if the recording has ended and if it has it returns False
-        if rc.state.endRecording:
+        if rc.state.endRecording and main:
             return False  # this return statement is the way the program exits
         else:
             rc.escapeActions()
@@ -44,16 +53,18 @@ def on_click(x, y, button, pressed):
     # checks if the recording is active and if it is it adds the mouse input to the array
     if rc.state.record:
         if pressed:
-            pb.state.array.append(ic.mouseInput("Click", button, x, y, rc.state))
+            pb.state.array.append(ic.MouseInput("Click", button, x, y, rc.state))
         else:
-            pb.state.array.append(ic.mouseInput("Release", button, x, y, rc.state))
+            pb.state.array.append(ic.MouseInput("Release", button, x, y, rc.state))
 
 
 def on_move(x, y):
+    if killSwitch:
+        return False
     # checks if the recording is active and  the mouse is outside a cetain range and if it is, it adds the mouse movement to the array
     # the range restriction was added so that the mouse movement wouldn't monopolize the input array
     # since one normal motion of the mouse would create a crazy amount of inputs
     if rc.state.record and not rc.inRange(x, y):
         rc.state.currentMouseXPossition = x
         rc.state.currentMouseYPossition = y
-        pb.state.array.append(ic.mouseInput("Move", "None", x, y, rc.state))
+        pb.state.array.append(ic.MouseInput("Move", "None", x, y, rc.state))

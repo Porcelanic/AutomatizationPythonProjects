@@ -54,6 +54,7 @@ def startPlayback(state):
 # this is the function that is used to create a thread for the playback
 def playback():
     global state
+    state.stopPlayback = False
     # if useTiming is true, the default pause from pyautogui is set to 0, 
     # if not, it is set to 0.01 (since saying to pyautogui to not pause at all can cause some problems)
     if useTiming:

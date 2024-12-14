@@ -1,7 +1,28 @@
 import threading
+import pyautogui
 from pynput import mouse
 from pynput import keyboard
-import Listeners as l
+from . import Listeners as l
+
+gui_wait_event = threading.Event()
+
+def guiThread():
+    while True:
+        print("Waiting for GUI")
+        gui_wait_event.wait()
+        gui_wait_event.clear()
+        main()
+        
+
+def killThreads():
+    l.setKillSwitch(True)
+    l.rc.startReRecord()
+    current_position = pyautogui.position()
+    new_position = (current_position.x + 1, current_position.y)
+    pyautogui.moveTo(new_position)
+    pyautogui.press('space')
+    
+
 
 # Define the function to start the keyboard listenerheloworld
 def start_keyboard_listener():
@@ -25,10 +46,12 @@ def main():
     # Start the mouse listener thread°
     mouse_thread.start()
 
+    
     # Wait for the keyboard thread to finish
     keyboard_thread.join()
 
 if __name__ == "__main__":
+    l.main = True
     main()
 
 
