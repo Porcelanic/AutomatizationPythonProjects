@@ -1,5 +1,5 @@
 import time
-from .Playback import state as Pstate
+from Playback import state as Pstate
 from pynput import keyboard
 
 RECORD_KEY = "-"

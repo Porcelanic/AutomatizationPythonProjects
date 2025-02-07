@@ -1,4 +1,4 @@
-from . import ListenersControllers as c
+import ListenersControllers as c
 
 killSwitch = False
 main = False

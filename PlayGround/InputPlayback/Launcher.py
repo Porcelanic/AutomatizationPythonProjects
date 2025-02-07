@@ -1,11 +1,9 @@
 import threading
-import pyautogui
 from pynput import mouse
 from pynput import keyboard
-from . import Listeners as l
-from . import Recording as r
-
-
+import Listeners as l
+import pyautogui
+import Recording as r
 
 gui_wait_event = threading.Event()
 
@@ -18,7 +16,7 @@ def guiThread():
 
 def killThreads():
     l.setKillSwitch(True)
-    r.startReRecord(r.state)
+    r.startReRecord()
     current_position = pyautogui.position()
     new_position = (current_position.x + 1, current_position.y)
     pyautogui.moveTo(new_position)

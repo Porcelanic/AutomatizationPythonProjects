@@ -1,10 +1,14 @@
 import keyboard  # Detect key presses
-import pyautogui  # Perform actions like clicks
 import threading  # Use threads for background tasks
 import time
+from pynput.mouse import Button, Controller as MouseController
+
+delayBetweenClicks = 0.01  # Time between clicks in seconds
+clickDuration = 0.01  # Click duration in seconds
+
+Mouse = MouseController()
 
 KeepGoing = True  # Main loop condition
-pyautogui.PAUSE = 0
 
 # Using threading.Event() for better thread control
 auto_click_event = threading.Event()
@@ -15,10 +19,10 @@ gui_wait_event = threading.Event()
 def AutoClicker():
     while KeepGoing:
         auto_click_event.wait()  # Wait until auto-clicking is allowed
-        pyautogui.mouseDown()  # Perform click
-        time.sleep(0.01)  # Click duration
-        pyautogui.mouseUp() # Release click
-        time.sleep(0.01)  # Delay between clicks
+        Mouse.press(Button.left)
+        time.sleep(clickDuration)  # Click duration
+        Mouse.release(Button.left)
+        time.sleep(delayBetweenClicks)  # Delay between clicks
 
 def changeState(state):
     if state:
